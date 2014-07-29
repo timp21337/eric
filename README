@@ -1,1 +1,6 @@
-My debian based install
+My debian based install.
+
+    apt-get install puppet
+    puppet module install puppetlabs/apt
+    puppet apply site.pp
+
