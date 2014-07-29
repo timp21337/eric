@@ -49,8 +49,9 @@ APT::Get::AllowUnauthenticated \"true\";
             'texlive-latex-extra',
             'postgresql',
             'pgadmin3',
-            'php5',
+            'php5-dev',
             'php5-cli',
+            'php-getid3',  
             'lynx-cur',
             'scrub',
             'ghc',
@@ -229,6 +230,20 @@ APT::Get::AllowUnauthenticated \"true\";
   file { '/usr/local/bin/idea.sh':
     ensure => 'link',
     target => '/usr/local/idea/bin/idea.sh',
+  }
+  ->
+  file { '/usr/share/applications/idea.desktop': 
+    content => "
+[Desktop Entry]
+Name=IntelliJ IDEA
+Comment=IntelliJ IDEA IDE
+Exec=/usr/local/bin/idea.sh
+Icon=/usr/local/idea/bin/idea_CE128.png
+Terminal=false
+StartupNotify=true
+Type=Application
+Categories=Development;IDE;
+",
   }
 
 
