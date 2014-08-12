@@ -55,10 +55,10 @@ APT::Get::AllowUnauthenticated \"true\";
             'php-getid3',  
             'lynx-cur',
             'scrub',
-            'ghc',
             'haskell-mode',
             'libghc-zlib-dev',
             'zlib1g-dev',
+            'ghc',
             'cabal-install', 
             'chromium-browser',
             'password-gorilla',
@@ -66,9 +66,7 @@ APT::Get::AllowUnauthenticated \"true\";
             'virtualbox',
    ]:
   }
-
-
-
+  ->
   exec { "/usr/bin/cabal update": 
     environment => ["HOME=/root"],
     user => root, 
@@ -134,10 +132,7 @@ APT::Get::AllowUnauthenticated \"true\";
 
  $tomcat_version = "7.0.55"
 
-  file { ['/scratch','/scratch/usr','/scratch/usr/local']:
-    ensure => directory;
-  }
-  -> 
+
   exec {'download-tomcat':
     command => "/usr/bin/wget -O /usr/local/apache-tomcat-${tomcat_version}.tar.gz http://mirror.ox.ac.uk/sites/rsync.apache.org/tomcat/tomcat-7/v${tomcat_version}/bin/apache-tomcat-${tomcat_version}.tar.gz",
     creates => "/usr/local/apache-tomcat-${tomcat_version}.tar.gz",
@@ -149,24 +144,22 @@ APT::Get::AllowUnauthenticated \"true\";
     creates => "/usr/local/apache-tomcat-${tomcat_version}",
   }
   -> 
-  exec { 'move tomcat': 
-    command => "/bin/mv /usr/local/apache-tomcat-${tomcat_version} /scratch/usr/local/",
-    creates => "/scratch/usr/local/apache-tomcat-${tomcat_version}",
-  } 
-  -> 
-  exec { 'link to moved tomcat': 
+  exec { 'link to tomcat': 
     command => "/bin/ln -s /scratch/usr/local/apache-tomcat-${tomcat_version} /usr/local/tomcat",
     creates => "/usr/local/tomcat",
+    unless => "/usr/local/tomcat",
   }
   -> 
   exec { 'link to tomcat init': 
     command => "/bin/ln -s /usr/local/tomcat/bin/catalina.sh /etc/init.d/tomcat",
     creates => "/etc/init.d/tomcat",
+    unless => "/etc/init.d/tomcat",
   }
   -> 
   exec { 'link to tomcat logs': 
     command => "/bin/ln -s /usr/local/tomcat/logs /var/log/tomcat",
     creates => "/var/log/tomcat",
+    unless => "/var/log/tomcat",
   }
 
 
@@ -261,11 +254,4 @@ Categories=Development;IDE;
   }
 
 }
-
-# Setup ssd
-# mv .cache /scratch/home/timp/cache
-# ln -s /scratch/home/timp/cache .cache
-#
-# mv scratch/git /scratch/home/timp/
-# mv scratch/bbm /scratch/home/timp/
 
