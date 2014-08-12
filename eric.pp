@@ -40,7 +40,8 @@ APT::Get::AllowUnauthenticated \"true\";
             'cvs', 
             'git',
             'gitk',
-            'gitg',            'openssh-server',
+            'gitg',
+            'openssh-server',
             'oracle-j2sdk1.6',
             'curl',
             'xchat',
@@ -55,11 +56,14 @@ APT::Get::AllowUnauthenticated \"true\";
             'lynx-cur',
             'scrub',
             'ghc',
+            'haskell-mode',
             'libghc-zlib-dev',
             'zlib1g-dev',
             'cabal-install', 
             'chromium-browser',
             'password-gorilla',
+            'vagrant',
+            'virtualbox',
    ]:
   }
 
