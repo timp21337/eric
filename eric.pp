@@ -131,34 +131,33 @@ APT::Get::AllowUnauthenticated \"true\";
     user => root, 
   }
 
-#  file { "/etc/apt/sources.list.d/google.list":
-#    owner => "root",
-#    group => "root",
-#    mode => 444,
-#    content => "deb http://dl.google.com/linux/chrome/deb stable non-free main\n",
-#    notify => Exec["Google apt-key"],
-#  }
+/*
+  file { "/etc/apt/sources.list.d/google.list":
+    owner => "root",
+    group => "root",
+    mode => 444,
+    content => "deb http://dl.google.com/linux/chrome/deb stable non-free main\n",
+    notify => Exec["Google apt-key"],
+  }
 
   # Add Google's apt-key.
-  # Assumes definition elsewhere of an Exec["apt-get update"] - or
-  # uncomment below.
-#  exec { "Google apt-key":
-#    command => "/usr/bin/wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | /usr/bin/apt-key add -",
-#    refreshonly => true,
-#    notify => Exec["apt-get update"],
-#  }
-
+  exec { "Google apt-key":
+    command => "/usr/bin/wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | /usr/bin/apt-key add -",
+    refreshonly => true,
+    notify => Exec["apt-get update"],
+  }
+*/
 
    exec { "Ensure video read writable": 
      command => "/bin/chmod o+rw /dev/video0";
    }
 
-
-#  package { "google-chrome-stable":
-#    ensure => latest, # to keep current with security updates
-#    require => [ Exec["apt-get update"], ],
-#  }
-
+/*
+  package { "google-chrome-stable":
+    ensure => latest, # to keep current with security updates
+    require => [ Exec["apt-get update"], ],
+  }
+*/
 
 
   exec { "Jenkins apt-key":
@@ -174,8 +173,8 @@ APT::Get::AllowUnauthenticated \"true\";
     command => "/usr/bin/apt-get update",
     refreshonly => true,
   }
-  ->
-  package {['jenkins']:}
+#  ->
+#  package {['jenkins']:}
 
 
 
@@ -296,12 +295,15 @@ Categories=Development;IDE;
   exec {' enable user sites': 
     command => "/usr/sbin/a2enmod userdir", 
   }
-   
 
+
+
+  # NOTE never use useradd, uless you know all groups you need
+  # as it removes user from unmentioned groups
   exec { ' ensure ability to use usb video': 
-    command => "/usr/sbin/usermod -G video timp",
+    command => "/usr/sbin/adduser timp video",    
   }
 
-  
+
 }
 
