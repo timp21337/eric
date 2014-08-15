@@ -2,8 +2,56 @@
 # puppet module install puppetlabs/apt
 # puppet apply site.pp
 
+define line($file, $line, $ensure = 'present') {
+  case $ensure {
+    default : { err ( "unknown ensure value ${ensure}" ) }
+    present: {
+      exec { "/bin/echo '${line}' >> '${file}'":
+        unless => "/bin/grep -qFx '${line}' '${file}'"
+      }
+    }
+    absent: {
+      exec { "/usr/bin/perl -ni -e 'print unless /^\\Q${line}\\E\$/' '${file}'":
+        onlyif => "/bin/grep -qFx '${line}' '${file}'"
+      }
+    }
+    uncomment: {
+      exec { "/bin/sed -i -e'/${line}/s/^#\\+//' '${file}'":
+        onlyif => "/bin/grep '${line}' '${file}' | /bin/grep '^#' | /usr/bin/wc -l"
+      }
+    }
+    comment: {
+      exec { "/bin/sed -i -e'/${line}/s/^\\(.\\+\\)$/#\\1/' '${file}'":
+        onlyif => "/usr/bin/test `/bin/grep '${line}' '${file}' | /bin/grep -v '^#' | /usr/bin/wc -l` -ne 0"
+      }
+    }
+  }
+}
+
+
 node default {
 
+
+  package {[
+            'etckeeper',
+   ]:
+  }
+  ->
+  line { "etckeeper_config_comment_bzr":
+      file => "/etc/etckeeper/etckeeper.conf",
+      line => 'VCS="bzr"',
+      ensure => comment
+  }
+  ->
+  line { "etckeeper_config_uncomment_git":
+      file => "/etc/etckeeper/etckeeper.conf",
+      line => 'VCS="git"',
+      ensure => uncomment
+  }
+
+
+
+  
   file { "/etc/apt/sources.list.d/mediagraft.list":
     owner => "root",
     group => "root",
@@ -36,8 +84,9 @@ APT::Get::AllowUnauthenticated \"true\";
     refreshonly => true,
   }
 ->
-  package {['emacs23-nox',
+  package {[
             'cvs', 
+            'emacs23-nox',
             'git',
             'gitk',
             'gitg',
@@ -253,5 +302,6 @@ Categories=Development;IDE;
     command => "/usr/sbin/usermod -G video timp",
   }
 
+  
 }
 
